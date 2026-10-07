@@ -270,12 +270,15 @@
 				<h2>Galeria</h2>
 				<p class="section-intro">Um pouco do nosso dia a dia de treino.</p>
 				<div class="gallery-grid">
-					<img src="assets/personal.jpg" alt="Treino de personal na Impacto Muay Thai" loading="lazy" />
-					<div class="gallery-placeholder todo">Foto do treino</div>
-					<div class="gallery-placeholder todo">Foto da turma kids</div>
-					<div class="gallery-placeholder todo">Foto do espaço</div>
-					<div class="gallery-placeholder todo">Foto do treino feminino</div>
-					<div class="gallery-placeholder todo">Foto de evento / graduação</div>
+					<img src="assets/treino.webp" alt="Turma de Muay Thai e Jiu Jitsu reunida no tatame da Impacto" loading="lazy" />
+					<img
+						src="assets/turma_kids.jpg"
+						alt="Turma kids da Impacto Muay Thai em frente ao símbolo da academia"
+						loading="lazy"
+						style="object-position: center 25%"
+					/>
+					<img src="assets/treino_2.webp" alt="Alunos jovens e adultos em guarda de Muay Thai no tatame da Impacto" loading="lazy" />
+					<img src="assets/turma_3.jpg" alt="Turma da Impacto Muay Thai com luvas em frente ao símbolo da academia" loading="lazy" />
 				</div>
 			</section>
 
@@ -378,13 +381,26 @@
 			const modalTitle = document.getElementById("horario-modal-title");
 			const modalImg = modal.querySelector(".horario-modal-img");
 			let openCard = null;
+			let openTrigger = null;
+
+			function showImage(title, src, alt, trigger, isPhoto) {
+				openTrigger = trigger;
+				modalTitle.textContent = title;
+				modalImg.src = src;
+				modalImg.alt = alt;
+				modal.classList.toggle("is-photo", isPhoto);
+				modal.showModal();
+			}
 
 			function openModal(card) {
 				openCard = card;
-				modalTitle.textContent = "Horários • " + card.dataset.name;
-				modalImg.src = card.dataset.horario;
-				modalImg.alt = "Horário dos treinos da unidade " + card.dataset.name;
-				modal.showModal();
+				showImage(
+					"Horários • " + card.dataset.name,
+					card.dataset.horario,
+					"Horário dos treinos da unidade " + card.dataset.name,
+					card,
+					false
+				);
 			}
 
 			function handleCard(card) {
@@ -394,6 +410,20 @@
 					card.classList.add("is-flipped");
 				}
 			}
+
+			// Fotos da galeria abrem ampliadas na mesma janela
+			document.querySelectorAll(".gallery-grid img").forEach((img) => {
+				img.tabIndex = 0;
+				img.setAttribute("role", "button");
+				const open = () => showImage("Galeria", img.src, img.alt, img, true);
+				img.addEventListener("click", open);
+				img.addEventListener("keydown", (event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						event.preventDefault();
+						open();
+					}
+				});
+			});
 
 			document.querySelectorAll(".unit-card").forEach((card) => {
 				card.addEventListener("click", () => handleCard(card));
@@ -416,8 +446,11 @@
 			modal.addEventListener("close", () => {
 				if (openCard) {
 					openCard.classList.remove("is-flipped");
-					openCard.focus();
 					openCard = null;
+				}
+				if (openTrigger) {
+					openTrigger.focus();
+					openTrigger = null;
 				}
 			});
 		</script>
